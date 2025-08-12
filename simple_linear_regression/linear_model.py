@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 
@@ -42,23 +43,23 @@ class SimpleLinearRegression:
             aux_b = b - lr * db
             return aux_w, aux_b
 
-    def __gradient_descent(self, X: np.array, y: np.array, lr: float, metric: str):
+    def __gradient_descent(self, X: np.array, y: np.array):
         # Generating initial values for w and b
-        w, b = 6, 7
+        self.w, self.b = 0, 0
         # Initial cost
-        cost = self.__loss_function(X, y, w, b, metric)
+        cost = self.__loss_function(X, y, self.w, self.b, self.metric)
         self.costs.append(cost)
-        while (cost > self.tolerance) and (i < self.max_iterations):
-            w, b = self.__update_coefficients(X, y, w, b, lr, metric, method="gd")    # Update the coefficients of f
-            cost = self.__loss_function(X, y, w, b, metric)                           # The total cost related to new coefficients
+        while (cost > self.tolerance) and (self.total_iterations < self.max_iterations):
+            self.w, self.b = self.__update_coefficients(X, y, self.w, self.b, self.lr, self.metric, method="gd")    # Update the coefficients of f
+            cost = self.__loss_function(X, y, self.w, self.b, self.metric)                           # The total cost related to new coefficients
             # Saving the history
-            self.weights.append((w, b))
+            self.weights.append((self.w, self.b))
             self.costs.append(cost)
             self.total_iterations += 1
 
     def fit(self, X: np.array, y: np.array) -> None:
         if self.method.strip().lower() == "gd":
-            return self.__gradient_descent(X, y, self.lr, self.metric)
+            return self.__gradient_descent(X, y)
 
     def predict(self, X: np.array) -> np.array:
         return self.__f(X=X, w=self.w, b=self.b)
@@ -66,8 +67,20 @@ class SimpleLinearRegression:
     # def evaluate(self, y: np.array) -> float:
     #     return 
 
+    @property
     def info(self) -> dict:
         infos = {"tolerance": self.tolerance, "user_limit_iterations": self.max_iterations, "model_real_iterations_executed": self.total_iterations,
                 "learning_rate": self.lr, "metric": self.metric, "method": self.method, "weights": (self.w, self.b),
                 "weights_history": self.weights, "costs_history": self.costs}
         return infos
+    
+    @property
+    def learning_curve(self) -> None:
+        x_len = len(self.costs)
+        steps = self.max_iterations // 10
+        plt.plot(np.arange(x_len), self.costs, label="Loss")
+        plt.title(label="Learning Curve")
+        plt.ylabel(ylabel=f"Loss - {self.info["metric"]}")
+        plt.xlabel(xlabel="Iterations")
+        plt.xticks(ticks=np.arange(0, x_len+1, (self.max_iterations / steps)), rotation=45)
+        plt.legend()
