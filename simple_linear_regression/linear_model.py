@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from math import floor, log10
 
 
 
@@ -64,8 +65,8 @@ class SimpleLinearRegression:
     def predict(self, X: np.array) -> np.array:
         return self.__f(X=X, w=self.w, b=self.b)
 
-    # def evaluate(self, y: np.array) -> float:
-    #     return 
+    def evaluate(self, X: np.array, y: np.array) -> float:
+        return self.__loss_function(X, y, self.w, self.b, self.metric)
 
     @property
     def info(self) -> dict:
@@ -77,10 +78,10 @@ class SimpleLinearRegression:
     @property
     def learning_curve(self) -> None:
         x_len = len(self.costs)
-        steps = self.max_iterations // 10
+        step = int(floor(log10(abs(self.max_iterations))))
         plt.plot(np.arange(x_len), self.costs, label="Loss")
         plt.title(label="Learning Curve")
         plt.ylabel(ylabel=f"Loss - {self.info["metric"]}")
         plt.xlabel(xlabel="Iterations")
-        plt.xticks(ticks=np.arange(0, x_len+1, (self.max_iterations / steps)), rotation=45)
+        plt.xticks(ticks=np.arange(0, x_len+1, step), rotation=45)
         plt.legend()
