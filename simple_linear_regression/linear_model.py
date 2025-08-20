@@ -9,7 +9,7 @@ class SimpleLinearRegression:
         '''
         '''
         # Initialization
-        self.tolerance = tolerance
+        self.tolerance = 0 if tolerance is None else tolerance
         self.max_iterations = n_iterations
         self.total_iterations = 0
         self.lr = lr
@@ -78,7 +78,7 @@ class SimpleLinearRegression:
     @property
     def learning_curve(self) -> None:
         x_len = len(self.costs)
-        step = int(floor(log10(abs(self.max_iterations))))
+        step = 1e4
         plt.plot(np.arange(x_len), self.costs, label="Loss")
         plt.title(label="Learning Curve")
         plt.ylabel(ylabel=f"Loss - {self.info["metric"]}")
